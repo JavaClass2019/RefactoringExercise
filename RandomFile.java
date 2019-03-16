@@ -25,8 +25,7 @@ public class RandomFile {
 
 		} // end try
 		catch (IOException ioException) {
-			JOptionPane.showMessageDialog(null, "Error processing file!");
-			System.exit(1);
+			showDialog("Error processing file!", true);
 		} // end catch
 
 		finally {
@@ -35,8 +34,7 @@ public class RandomFile {
 					file.close(); // close file
 			} // end try
 			catch (IOException ioException) {
-				JOptionPane.showMessageDialog(null, "Error closing file!");
-				System.exit(1);
+				showDialog("Error closing file!", true);
 			} // end catch
 		} // end finally
 	} // end createFile
@@ -82,7 +80,7 @@ public class RandomFile {
 			currentRecordStart = output.length();
 		} // end try
 		catch (IOException ioException) {
-			JOptionPane.showMessageDialog(null, "Error writing to file!");
+			showDialog("Error writing to file!", false);
 		} // end catch
 
 		return currentRecordStart - RandomAccessEmployeeRecord.SIZE;// Return
@@ -106,7 +104,7 @@ public class RandomFile {
 			record.write(output);// Write object to file
 		} // end try
 		catch (IOException ioException) {
-			JOptionPane.showMessageDialog(null, "Error writing to file!");
+			showDialog("Error writing to file!", false);
 		} // end catch
 	}// end changeRecors
 
@@ -125,7 +123,7 @@ public class RandomFile {
 			record.write(output);// Replace existing object with empty object
 		} // end try
 		catch (IOException ioException) {
-			JOptionPane.showMessageDialog(null, "Error writing to file!");
+			showDialog("Error writing to file!", false);
 		} // end catch
 	}// end deleteRecords
 
@@ -136,7 +134,7 @@ public class RandomFile {
 			input = new RandomAccessFile(fileName, "r");
 		} // end try
 		catch (IOException ioException) {
-			JOptionPane.showMessageDialog(null, "File is not suported!");
+			showDialog("File is not suported!", false);
 		} // end catch
 	} // end method openFile
 
@@ -148,8 +146,7 @@ public class RandomFile {
 				input.close();
 		} // end try
 		catch (IOException ioException) {
-			JOptionPane.showMessageDialog(null, "Error closing file!");
-			System.exit(1);
+			showDialog("Error closing file!", true);
 		} // end catch
 	} // end method closeFile
 
@@ -161,6 +158,7 @@ public class RandomFile {
 			input.length();
 		} // end try
 		catch (IOException e) {
+			showErrorReadingFileDialog();
 		}// end catch
 		
 		return byteToStart;
@@ -174,6 +172,7 @@ public class RandomFile {
 			byteToStart = input.length() - RandomAccessEmployeeRecord.SIZE;
 		}// end try 
 		catch (IOException e) {
+			showErrorReadingFileDialog();
 		}// end catch
 
 		return byteToStart;
@@ -210,9 +209,8 @@ public class RandomFile {
 			else
 				byteToStart = byteToStart - RandomAccessEmployeeRecord.SIZE;
 		} // end try
-		catch (NumberFormatException e) {
-		} // end catch
-		catch (IOException e) {
+		catch (NumberFormatException | IOException e) {
+			showErrorReadingFileDialog();
 		}// end catch
 		return byteToStart;
 	}// end getPrevious
@@ -251,7 +249,7 @@ public class RandomFile {
 					// If PPS Number already exist in other record display message and stop search
 					if (record.getEmployee().getPps().trim().equalsIgnoreCase(pps)) {
 						ppsExist = true;
-						JOptionPane.showMessageDialog(null, "PPS number already exist!");
+						showDialog("PPS number already exist!", false);
 					}// end if
 				}// end if
 				currentByte = currentByte + RandomAccessEmployeeRecord.SIZE;
@@ -285,4 +283,22 @@ public class RandomFile {
 
 		return someoneToDisplay;
 	}// end isSomeoneToDisplay
+
+	/**
+	 * Show a JDialogPane that shows some message - which is
+	 * typically an error message
+	 *
+	 * @param message The message to display
+	 * @param exitAfter whether to exit the program after showing the program or not
+	 */
+	private void showDialog(String message, boolean exitAfter) {
+		JOptionPane.showMessageDialog(null, message);
+		if (exitAfter) {
+			System.exit(1);
+		}
+	}
+
+	private void showErrorReadingFileDialog() {
+		showDialog("Error reading record(s) from file!", false);
+	}
 }// end class RandomFile
