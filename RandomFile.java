@@ -6,6 +6,7 @@
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
@@ -14,6 +15,25 @@ import javax.swing.JOptionPane;
 public class RandomFile {
 	private RandomAccessFile output;
 	private RandomAccessFile input;
+
+	private long currentBytePos;
+	private File file;
+
+	public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+	public long getCurrentBytePos() {
+		return currentBytePos;
+	}
+
+	public void setCurrentBytePos(long currentBytePos) {
+		this.currentBytePos = currentBytePos;
+	}
 
 	// Create new file
 	public void createFile(String fileName) {

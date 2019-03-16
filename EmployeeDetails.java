@@ -6,11 +6,8 @@
  * 
  * */
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -22,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.text.DecimalFormat;
 import java.util.Random;
 import java.util.Vector;
 
@@ -47,11 +43,10 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import net.miginfocom.swing.MigLayout;
-
 public class EmployeeDetails extends JFrame implements ActionListener, ItemListener, DocumentListener, WindowListener {
 	private long currentByteStart = 0;
-	private RandomFile application = new RandomFile();
+	private RandomFile randomAccessFile;
+	private EmployeeRepository employeeRepository;
 	// display files in File Chooser only with extension .dat
 	private FileNameExtensionFilter datfilter = new FileNameExtensionFilter("dat files (*.dat)", "dat");
 	// hold file name and path for current file in use
@@ -80,6 +75,11 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 	String[] department = { "", "Administration", "Production", "Transport", "Management" };
 	// full time combo box values
 	String[] fullTime = { "", "Yes", "No" };
+
+	public EmployeeDetails() throws HeadlessException {
+		randomAccessFile = new RandomFile();
+		employeeRepository = new EmployeeRepository(randomAccessFile);
+	}
 
 	// initialize menu bar
 	private JMenuBar menuBar() {
@@ -358,12 +358,12 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 		// if any active record in file look for first record
 		if (isSomeoneToDisplay()) {
 			// open file for reading
-			application.openReadFile(file.getAbsolutePath());
+			randomAccessFile.openReadFile(file.getAbsolutePath());
 			// get byte start in file for first record
-			currentByteStart = application.getFirst();
+			currentByteStart = randomAccessFile.getFirst();
 			// assign current Employee to first record in file
-			currentEmployee = application.readRecords(currentByteStart);
-			application.closeReadFile();// close file for reading
+			currentEmployee = randomAccessFile.readRecords(currentByteStart);
+			randomAccessFile.closeReadFile();// close file for reading
 			// if first record is inactive look for next record
 			if (currentEmployee.getEmployeeId() == 0)
 				nextRecord();// look for next record
@@ -375,41 +375,27 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 		// if any active record in file look for first record
 		if (isSomeoneToDisplay()) {
 			// open file for reading
-			application.openReadFile(file.getAbsolutePath());
+			randomAccessFile.openReadFile(file.getAbsolutePath());
 			// get byte start in file for previous record
-			currentByteStart = application.getPrevious(currentByteStart);
+			currentByteStart = randomAccessFile.getPrevious(currentByteStart);
 			// assign current Employee to previous record in file
-			currentEmployee = application.readRecords(currentByteStart);
+			currentEmployee = randomAccessFile.readRecords(currentByteStart);
 			// loop to previous record until Employee is active - ID is not 0
 			while (currentEmployee.getEmployeeId() == 0) {
 				// get byte start in file for previous record
-				currentByteStart = application.getPrevious(currentByteStart);
+				currentByteStart = randomAccessFile.getPrevious(currentByteStart);
 				// assign current Employee to previous record in file
-				currentEmployee = application.readRecords(currentByteStart);
+				currentEmployee = randomAccessFile.readRecords(currentByteStart);
 			} // end while
-			application.closeReadFile();// close file for reading
+			randomAccessFile.closeReadFile();// close file for reading
 		}
 	}// end previousRecord
 
 	// find byte start in file for next active record
 	private void nextRecord() {
-		// if any active record in file look for first record
-		if (isSomeoneToDisplay()) {
-			// open file for reading
-			application.openReadFile(file.getAbsolutePath());
-			// get byte start in file for next record
-			currentByteStart = application.getNext(currentByteStart);
-			// assign current Employee to record in file
-			currentEmployee = application.readRecords(currentByteStart);
-			// loop to previous next until Employee is active - ID is not 0
-			while (currentEmployee.getEmployeeId() == 0) {
-				// get byte start in file for next record
-				currentByteStart = application.getNext(currentByteStart);
-				// assign current Employee to next record in file
-				currentEmployee = application.readRecords(currentByteStart);
-			} // end while
-			application.closeReadFile();// close file for reading
-		} // end if
+		randomAccessFile.setCurrentBytePos(currentByteStart);
+		randomAccessFile.setFile(file);
+		currentEmployee = employeeRepository.nextRecord();
 	}// end nextRecord
 
 	// find byte start in file for last active record
@@ -417,12 +403,12 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 		// if any active record in file look for first record
 		if (isSomeoneToDisplay()) {
 			// open file for reading
-			application.openReadFile(file.getAbsolutePath());
+			randomAccessFile.openReadFile(file.getAbsolutePath());
 			// get byte start in file for last record
-			currentByteStart = application.getLast();
+			currentByteStart = randomAccessFile.getLast();
 			// assign current Employee to first record in file
-			currentEmployee = application.readRecords(currentByteStart);
-			application.closeReadFile();// close file for reading
+			currentEmployee = randomAccessFile.readRecords(currentByteStart);
+			randomAccessFile.closeReadFile();// close file for reading
 			// if last record is inactive look for previous record
 			if (currentEmployee.getEmployeeId() == 0)
 				previousRecord();// look for previous record
@@ -545,10 +531,10 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 	// add Employee object to fail
 	public void addRecord(Employee newEmployee) {
 		// open file for writing
-		application.openWriteFile(file.getAbsolutePath());
+		randomAccessFile.openWriteFile(file.getAbsolutePath());
 		// write into a file
-		currentByteStart = application.addRecords(newEmployee);
-		application.closeWriteFile();// close file for writing
+		currentByteStart = randomAccessFile.addRecords(newEmployee);
+		randomAccessFile.closeWriteFile();// close file for writing
 	}// end addRecord
 
 	// delete (make inactive - empty) record from file
@@ -560,10 +546,10 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 			// if answer yes delete (make inactive - empty) record
 			if (returnVal == JOptionPane.YES_OPTION) {
 				// open file for writing
-				application.openWriteFile(file.getAbsolutePath());
+				randomAccessFile.openWriteFile(file.getAbsolutePath());
 				// delete (make inactive - empty) record in file proper position
-				application.deleteRecords(currentByteStart);
-				application.closeWriteFile();// close file for writing
+				randomAccessFile.deleteRecords(currentByteStart);
+				randomAccessFile.closeWriteFile();// close file for writing
 				// if any active record in file display next record
 				if (isSomeoneToDisplay()) {
 					nextRecord();// look for next record
@@ -622,13 +608,8 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 
 	// check if any of records in file is active - ID is not 0
 	private boolean isSomeoneToDisplay() {
-		boolean someoneToDisplay = false;
-		// open file for reading
-		application.openReadFile(file.getAbsolutePath());
-		// check if any of records in file is active - ID is not 0
-		someoneToDisplay = application.isSomeoneToDisplay();
-		application.closeReadFile();// close file for reading
-		// if no records found clear all text fields and display message
+		randomAccessFile.setFile(file);
+		boolean someoneToDisplay = employeeRepository.recordsExist()
 		if (!someoneToDisplay) {
 			currentEmployee = null;
 			idField.setText("");
@@ -655,10 +636,10 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 					&& Character.isDigit(pps.charAt(6))	&& Character.isLetter(pps.charAt(7))
 					&& (pps.length() == 8 || Character.isLetter(pps.charAt(8)))) {
 				// open file for reading
-				application.openReadFile(file.getAbsolutePath());
+				randomAccessFile.openReadFile(file.getAbsolutePath());
 				// look in file is PPS already in use
-				ppsExist = application.isPpsExist(pps, currentByte);
-				application.closeReadFile();// close file for reading
+				ppsExist = randomAccessFile.isPpsExist(pps, currentByte);
+				randomAccessFile.closeReadFile();// close file for reading
 			} // end if
 			else
 				ppsExist = true;
@@ -817,10 +798,10 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 				file.delete();// delete file
 			file = newFile;// assign opened file to file
 			// open file for reading
-			application.openReadFile(file.getAbsolutePath());
+			randomAccessFile.openReadFile(file.getAbsolutePath());
 			firstRecord();// look for first record
 			displayRecords(currentEmployee);
-			application.closeReadFile();// close file for reading
+			randomAccessFile.closeReadFile();// close file for reading
 		} // end if
 	}// end openFile
 
@@ -841,13 +822,13 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 					// save changes if ID field is not empty
 					if (!idField.getText().equals("")) {
 						// open file for writing
-						application.openWriteFile(file.getAbsolutePath());
+						randomAccessFile.openWriteFile(file.getAbsolutePath());
 						// get changes for current Employee
 						currentEmployee = getChangedDetails();
 						// write changes to file for corresponding Employee
 						// record
-						application.changeRecords(currentEmployee, currentByteStart);
-						application.closeWriteFile();// close file for writing
+						randomAccessFile.changeRecords(currentEmployee, currentByteStart);
+						randomAccessFile.closeWriteFile();// close file for writing
 					} // end if
 				} // end if
 			} // end if
@@ -864,12 +845,12 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 		// if user choose to save changes, save changes
 		if (returnVal == JOptionPane.YES_OPTION) {
 			// open file for writing
-			application.openWriteFile(file.getAbsolutePath());
+			randomAccessFile.openWriteFile(file.getAbsolutePath());
 			// get changes for current Employee
 			currentEmployee = getChangedDetails();
 			// write changes to file for corresponding Employee record
-			application.changeRecords(currentEmployee, currentByteStart);
-			application.closeWriteFile();// close file for writing
+			randomAccessFile.changeRecords(currentEmployee, currentByteStart);
+			randomAccessFile.closeWriteFile();// close file for writing
 			changesMade = false;// state that all changes has bee saved
 		} // end if
 		displayRecords(currentEmployee);
@@ -896,11 +877,11 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 				// add .dat extension if it was not there
 				newFile = new File(newFile.getAbsolutePath() + ".dat");
 				// create new file
-				application.createFile(newFile.getAbsolutePath());
+				randomAccessFile.createFile(newFile.getAbsolutePath());
 			} // end id
 			else
 				// create new file
-				application.createFile(newFile.getAbsolutePath());
+				randomAccessFile.createFile(newFile.getAbsolutePath());
 
 			try {// try to copy old file to new file
 				Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -973,7 +954,7 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 		// assign generated file name to file
 		file = new File(generatedFileName);
 		// create file
-		application.createFile(file.getName());
+		randomAccessFile.createFile(file.getName());
 	}// end createRandomFile
 
 	// action listener for buttons, text field and menu items
