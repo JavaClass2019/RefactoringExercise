@@ -372,23 +372,10 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 
 	// find byte start in file for previous active record
 	private void previousRecord() {
-		// if any active record in file look for first record
-		if (isSomeoneToDisplay()) {
-			// open file for reading
-			randomAccessFile.openReadFile(file.getAbsolutePath());
-			// get byte start in file for previous record
-			currentByteStart = randomAccessFile.getPrevious(currentByteStart);
-			// assign current Employee to previous record in file
-			currentEmployee = randomAccessFile.readRecords(currentByteStart);
-			// loop to previous record until Employee is active - ID is not 0
-			while (currentEmployee.getEmployeeId() == 0) {
-				// get byte start in file for previous record
-				currentByteStart = randomAccessFile.getPrevious(currentByteStart);
-				// assign current Employee to previous record in file
-				currentEmployee = randomAccessFile.readRecords(currentByteStart);
-			} // end while
-			randomAccessFile.closeReadFile();// close file for reading
-		}
+		randomAccessFile.setFile(file);
+		randomAccessFile.setCurrentBytePos(currentByteStart);
+		currentEmployee = employeeRepository.previousRecord();
+		currentByteStart = randomAccessFile.getCurrentBytePos();
 	}// end previousRecord
 
 	// find byte start in file for next active record
@@ -530,11 +517,8 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 
 	// add Employee object to fail
 	public void addRecord(Employee newEmployee) {
-		// open file for writing
-		randomAccessFile.openWriteFile(file.getAbsolutePath());
-		// write into a file
-		currentByteStart = randomAccessFile.addRecords(newEmployee);
-		randomAccessFile.closeWriteFile();// close file for writing
+		employeeRepository.add(newEmployee);
+		currentByteStart = randomAccessFile.getCurrentBytePos();
 	}// end addRecord
 
 	// delete (make inactive - empty) record from file
