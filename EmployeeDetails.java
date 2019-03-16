@@ -50,11 +50,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import net.miginfocom.swing.MigLayout;
 
 public class EmployeeDetails extends JFrame implements ActionListener, ItemListener, DocumentListener, WindowListener {
-	// decimal format for inactive currency text field
-	private static final DecimalFormat format = new DecimalFormat("\u20ac ###,###,##0.00");
-	// decimal format for active currency text field
-	private static final DecimalFormat fieldFormat = new DecimalFormat("0.00");
-	// hold object start position in file
 	private long currentByteStart = 0;
 	private RandomFile application = new RandomFile();
 	// display files in File Chooser only with extension .dat
@@ -329,7 +324,7 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 			firstNameField.setText(thisEmployee.getFirstName());
 			genderCombo.setSelectedIndex(countGender);
 			departmentCombo.setSelectedIndex(countDep);
-			salaryField.setText(format.format(thisEmployee.getSalary()));
+			salaryField.setText(Formats.CURRENCY.format(thisEmployee.getSalary()));
 			// set corresponding full time combo box value to current employee
 			if (thisEmployee.getFullTime() == true)
 				fullTimeCombo.setSelectedIndex(1);
@@ -613,7 +608,7 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 		// activate field for editing if there is records to display
 		if (isSomeoneToDisplay()) {
 			// remove euro sign from salary text field
-			salaryField.setText(fieldFormat.format(currentEmployee.getSalary()));
+			salaryField.setText(Formats.TEXT_FIELD.format(currentEmployee.getSalary()));
 			change = false;
 			setEnabled(true);// enable text fields for editing
 		} // end if

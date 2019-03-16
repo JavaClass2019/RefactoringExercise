@@ -120,9 +120,6 @@ public class EmployeeSummaryDialog extends JDialog implements ActionListener {
 	}
 	// format for salary column
 	static class DecimalFormatRenderer extends DefaultTableCellRenderer {
-		 private static final DecimalFormat format = new DecimalFormat(
-		 "\u20ac ###,###,##0.00" );
-
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 				int row, int column) {
 
@@ -130,7 +127,7 @@ public class EmployeeSummaryDialog extends JDialog implements ActionListener {
 			 JLabel label = (JLabel) c;
 			 label.setHorizontalAlignment(JLabel.RIGHT);
 			 // format salary column
-			value = format.format((Number) value);
+			value = Formats.CURRENCY.format((Number) value);
 
 			return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 		}// end getTableCellRendererComponent
