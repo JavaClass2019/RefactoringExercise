@@ -75,9 +75,7 @@ public class RandomFile {
 
 		try // output values to file
 		{
-			record = new RandomAccessEmployeeRecord(newEmployee.getEmployeeId(), newEmployee.getPps(),
-					newEmployee.getSurname(), newEmployee.getFirstName(), newEmployee.getGender(),
-					newEmployee.getDepartment(), newEmployee.getSalary(), newEmployee.getFullTime());
+			record = new RandomAccessEmployeeRecord(newEmployee);
 
 			output.seek(output.length());// Look for proper position
 			record.write(output);// Write object to file
@@ -103,10 +101,7 @@ public class RandomFile {
 		Employee oldDetails = newDetails;
 		try // output values to file
 		{
-			record = new RandomAccessEmployeeRecord(oldDetails.getEmployeeId(), oldDetails.getPps(),
-					oldDetails.getSurname(), oldDetails.getFirstName(), oldDetails.getGender(),
-					oldDetails.getDepartment(), oldDetails.getSalary(), oldDetails.getFullTime());
-
+			record = new RandomAccessEmployeeRecord(oldDetails);
 			output.seek(currentRecordStart);// Look for proper position
 			record.write(output);// Write object to file
 		} // end try
@@ -234,7 +229,7 @@ public class RandomFile {
 		catch (IOException e) {
 		}// end catch
 		
-		thisEmp = record;
+		thisEmp = record.getEmployee();
 
 		return thisEmp;
 	}// end readRecords
@@ -254,7 +249,7 @@ public class RandomFile {
 					input.seek(currentByte);// Look for proper position in file
 					record.read(input);// Get record from file
 					// If PPS Number already exist in other record display message and stop search
-					if (record.getPps().trim().equalsIgnoreCase(pps)) {
+					if (record.getEmployee().getPps().trim().equalsIgnoreCase(pps)) {
 						ppsExist = true;
 						JOptionPane.showMessageDialog(null, "PPS number already exist!");
 					}// end if
@@ -280,7 +275,7 @@ public class RandomFile {
 				input.seek(currentByte);// Look for proper position in file
 				record.read(input);// Get record from file
 				// If valid ID exist in stop search
-				if (record.getEmployeeId() > 0)
+				if (record.getEmployee().getEmployeeId() > 0)
 					someoneToDisplay = true;
 				currentByte = currentByte + RandomAccessEmployeeRecord.SIZE;
 			}// end while
