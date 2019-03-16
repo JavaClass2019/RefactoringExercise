@@ -43,7 +43,10 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import net.miginfocom.swing.MigLayout;
+
 public class EmployeeDetails extends JFrame implements ActionListener, ItemListener, DocumentListener, WindowListener {
+	private static final long serialVersionUID = 1L;
 	private long currentByteStart = 0;
 	private RandomFile randomAccessFile;
 	private EmployeeRepository employeeRepository;
@@ -579,7 +582,7 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 	// check if any of records in file is active - ID is not 0
 	private boolean isSomeoneToDisplay() {
 		randomAccessFile.setFile(file);
-		boolean someoneToDisplay = employeeRepository.recordsExist()
+		boolean someoneToDisplay = employeeRepository.recordsExist();
 		if (!someoneToDisplay) {
 			currentEmployee = null;
 			idField.setText("");
@@ -1020,7 +1023,7 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 	}// end createContentPane
 
 	// create and show main dialog
-	private void createAndShowGUI() {
+	public void createAndShowGUI() {
 		randomAccessFile = new RandomFile();
 		employeeRepository = new EmployeeRepository(randomAccessFile);
 
