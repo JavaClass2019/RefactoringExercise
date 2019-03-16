@@ -1083,15 +1083,6 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 		frame.setVisible(true);
 	}// end createAndShowGUI
 
-	// main method
-	public static void main(String args[]) {
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				createAndShowGUI();
-			}
-		});
-	}// end main
-
 	// DocumentListener methods
 	public void changedUpdate(DocumentEvent d) {
 		change = true;
