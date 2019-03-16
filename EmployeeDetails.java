@@ -71,7 +71,7 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 			saveChange, cancelChange;
 	private JComboBox<String> genderCombo, departmentCombo, fullTimeCombo;
 	private JTextField idField, ppsField, surnameField, firstNameField, salaryField;
-	private static EmployeeDetails frame = new EmployeeDetails();
+	private EmployeeDetails frame = new EmployeeDetails();
 	// font for labels, text fields and combo boxes
 	Font font1 = new Font("SansSerif", Font.BOLD, 16);
 	// holds automatically generated file name
@@ -1074,7 +1074,7 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 	}// end createContentPane
 
 	// create and show main dialog
-	private static void createAndShowGUI() {
+	private void createAndShowGUI() {
 
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.createContentPane();// add content pane to frame
