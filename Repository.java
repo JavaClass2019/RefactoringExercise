@@ -49,4 +49,16 @@ public interface Repository {
      * @return
      */
     Employee nextRecord();
+
+        /**
+     * Gets the first record from the database
+     * @return
+     */
+    Employee firstRecord();
+
+    /**
+     * Gets the last record from the database
+     * @return
+     */
+    Employee lastRecord();
 }

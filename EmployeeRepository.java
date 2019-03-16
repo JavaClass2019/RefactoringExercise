@@ -99,4 +99,44 @@ public class EmployeeRepository implements Repository {
         randomAccessFile.setCurrentBytePos(currentByteStart);
         return currentEmployee;
     }// end previousRecord
+
+    // find byte start in file for last active record
+    public Employee lastRecord() {
+        Employee currentEmployee = null;
+        long currentByteStart;
+        // if any active record in file look for first record
+        if (recordsExist()) {
+            // open file for reading
+            randomAccessFile.openReadFile(randomAccessFile.getFile().getAbsolutePath());
+            // get byte start in file for last record
+            currentByteStart = randomAccessFile.getLast();
+            // assign current Employee to first record in file
+            currentEmployee = randomAccessFile.readRecords(currentByteStart);
+            randomAccessFile.closeReadFile();// close file for reading
+            // if last record is inactive look for previous record
+            if (currentEmployee.getEmployeeId() == 0)
+                currentEmployee = previousRecord();// look for previous record
+        } // end if
+        return currentEmployee;
+    }// end lastRecord
+
+    // find byte start in file for first active record
+    public Employee firstRecord() {
+        Employee currentEmployee = null;
+        long currentByteStart;
+        // if any active record in file look for first record
+        if (recordsExist()) {
+            // open file for reading
+            randomAccessFile.openReadFile(randomAccessFile.getFile().getAbsolutePath());
+            // get byte start in file for first record
+            currentByteStart = randomAccessFile.getFirst();
+            // assign current Employee to first record in file
+            currentEmployee = randomAccessFile.readRecords(currentByteStart);
+            randomAccessFile.closeReadFile();// close file for reading
+            // if first record is inactive look for next record
+            if (currentEmployee.getEmployeeId() == 0)
+                currentEmployee = nextRecord();// look for next record
+        } // end if
+        return currentEmployee;
+    }
 }
