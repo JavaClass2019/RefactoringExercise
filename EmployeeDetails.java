@@ -76,11 +76,6 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 	// full time combo box values
 	String[] fullTime = { "", "Yes", "No" };
 
-	public EmployeeDetails() throws HeadlessException {
-		randomAccessFile = new RandomFile();
-		employeeRepository = new EmployeeRepository(randomAccessFile);
-	}
-
 	// initialize menu bar
 	private JMenuBar menuBar() {
 		JMenuBar menuBar = new JMenuBar();
@@ -387,19 +382,10 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 
 	// find byte start in file for last active record
 	private void lastRecord() {
-		// if any active record in file look for first record
-		if (isSomeoneToDisplay()) {
-			// open file for reading
-			randomAccessFile.openReadFile(file.getAbsolutePath());
-			// get byte start in file for last record
-			currentByteStart = randomAccessFile.getLast();
-			// assign current Employee to first record in file
-			currentEmployee = randomAccessFile.readRecords(currentByteStart);
-			randomAccessFile.closeReadFile();// close file for reading
-			// if last record is inactive look for previous record
-			if (currentEmployee.getEmployeeId() == 0)
-				previousRecord();// look for previous record
-		} // end if
+		randomAccessFile.setFile(file);
+		// randomAccessFile.setCurrentBytePos(currentByteStart);
+		currentEmployee = employeeRepository.lastRecord();
+		currentByteStart = randomAccessFile.getCurrentBytePos();
 	}// end lastRecord
 
 	// search Employee by ID
@@ -1035,6 +1021,8 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 
 	// create and show main dialog
 	private void createAndShowGUI() {
+		randomAccessFile = new RandomFile();
+		employeeRepository = new EmployeeRepository(randomAccessFile);
 
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.createContentPane();// add content pane to frame
