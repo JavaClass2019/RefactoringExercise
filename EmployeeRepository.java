@@ -54,7 +54,7 @@ public class EmployeeRepository implements Repository {
     // find byte start in file for next active record
     public Employee nextRecord() {
         long currentByteStart = randomAccessFile.getCurrentBytePos();
-        Employee currentEmployee = null;
+        Employee currentEmployee = Employee.NULL_EMPLOYEE;
         // if any active record in file look for first record
         if (recordsExist()) {
             // open file for reading
@@ -77,7 +77,7 @@ public class EmployeeRepository implements Repository {
 
     // find byte start in file for previous active record
     public Employee previousRecord() {
-        Employee currentEmployee = null;
+        Employee currentEmployee = Employee.NULL_EMPLOYEE;
         long currentByteStart = randomAccessFile.getCurrentBytePos();
         // if any active record in file look for first record
         if (recordsExist()) {
@@ -102,7 +102,7 @@ public class EmployeeRepository implements Repository {
 
     // find byte start in file for last active record
     public Employee lastRecord() {
-        Employee currentEmployee = null;
+        Employee currentEmployee = Employee.NULL_EMPLOYEE;
         long currentByteStart;
         // if any active record in file look for first record
         if (recordsExist()) {
@@ -122,7 +122,7 @@ public class EmployeeRepository implements Repository {
 
     // find byte start in file for first active record
     public Employee firstRecord() {
-        Employee currentEmployee = null;
+        Employee currentEmployee = Employee.NULL_EMPLOYEE;
         long currentByteStart;
         // if any active record in file look for first record
         if (recordsExist()) {

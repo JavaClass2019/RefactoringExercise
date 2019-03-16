@@ -14,6 +14,7 @@ public class Employee{
 	private double salary;
 	private boolean fullTime;
 
+	public static final Employee NULL_EMPLOYEE = new Employee(0, "","","",'\0', "", 0.0, false);
 	// Create Employee with no details
 	public Employee() {
 		this.employeeId = 0;

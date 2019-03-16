@@ -1,3 +1,4 @@
+
 /*
  * 
  * This is a Random Access Employee record definition
@@ -5,6 +6,7 @@
  * */
 
 import java.io.RandomAccessFile;
+import java.util.Objects;
 import java.io.IOException;
 
 public class RandomAccessEmployeeRecord
@@ -16,7 +18,7 @@ public class RandomAccessEmployeeRecord
    // Create empty record
    public RandomAccessEmployeeRecord()
    {
-      this.employee = new Employee(0, "","","",'\0', "", 0.0, false);
+      this.employee = Employee.NULL_EMPLOYEE;
    } // end RandomAccessEmployeeRecord
 
    // Initialize record with details
