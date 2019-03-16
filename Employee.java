@@ -107,11 +107,7 @@ public class Employee{
 
 	// Display Employee details
 	public String toString() {
-		String bool = "";
-		if (fullTime)
-			bool = "Yes";
-		else
-			bool = "No";
+		String bool = fullTime ? "Yes" : "No";
 
 		return "Employee ID: " + this.employeeId + "\nPPS Number: " + this.pps + "\nSurname: " + this.surname
 				+ "\nFirst Name: " + this.firstName + "\nGender: " + this.gender + "\nDepartment: " + this.department + "\nSalary: " + this.salary
